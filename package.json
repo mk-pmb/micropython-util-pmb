@@ -1,0 +1,24 @@
+{ "name": "micropython-util-pmb",
+  "version": "0.0.1",
+  "description": "Tools for helping me set up my NodeMCUs with MicroPython.",
+  "keywords": [
+    "micropython"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/micropython-util-pmb/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/micropython-util-pmb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/micropython-util-pmb/issues"
+  },
+  "contributors": [],
+
+  "private": true, "license": "ISC",
+
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
