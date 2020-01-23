@@ -39,6 +39,7 @@ function mpfcmd_upload_firmware () {
   if [ "$FLASH_RV" == 0 ]; then
     sed -re '/\S/!d;s~^( ?) *~H: \1~' <<<"
       If the firmware doesn't work, try
+        * (if serial port) checking your baud rate settings on both sides.
         * manually rebooting your dev board.
         * erasing the entire flash before uploading a new firmware.
         * a slower flash mode. (currently, FLASH_SLOWER=$FLASH_SLOWER

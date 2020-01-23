@@ -12,7 +12,7 @@ function mpf_main () {
     source "$LIB" --lib || return $?
   done
   mpf_guess_config_basics || return $?
-  source "${1%%__*}".cmd.sh --lib || return $?
+  source "$MPF_PATH/${1%%__*}".cmd.sh --lib || return $?
   mpfcmd_"$@" || return $?
 }
 
