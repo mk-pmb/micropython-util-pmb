@@ -6,6 +6,7 @@ function mpf_main () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local MPF_PATH="$(readlink -m "$BASH_SOURCE"/..)"
   # cd -- "$MPF_PATH" || return $?
+  local DBGLV="${DEBUGLEVEL:-0}"
   local -A CFG=()
   local LIB=
   for LIB in "$MPF_PATH"/*.lib.sh; do

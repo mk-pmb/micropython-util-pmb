@@ -53,7 +53,7 @@ function mpfcmd_setup_wifi () {
 
   mpf_verify_tty_usage idle || return $?
   echo "D: setup instructions will now be sent."
-  <<<"$SETUP_CMD" mpf_communicate raw duplex || return $?
+  <<<"$SETUP_CMD" mpf_communicate duplex raw || return $?
   echo "D: setup instructions have been sent."
 }
 

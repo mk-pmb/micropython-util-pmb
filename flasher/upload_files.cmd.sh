@@ -4,7 +4,13 @@
 
 function mpfcmd_upload_files () {
   local REPL_LANG="${MPF_REPL_LANG:-py}"
+  local REPL_MODE="${MPF_REPL_MODE:-raw}"
+
   local ARG= DEST_DIR='/' DEST_FN=
+  case "$REPL_LANG" in
+    lua ) DEST_DIR='/FLASH/';;
+  esac
+
   while [ "$#" -ge 1 ]; do
     ARG="$1"; shift
     case "$ARG" in
@@ -22,7 +28,16 @@ function mpfcmd_upload_files () {
 function mpfcmd_upload_files__up_one () {
   local SRC_FN="$1"
   local DEST_ABS="${DEST_DIR}${DEST_FN:-$SRC_FN}"
-  local DATA_B64="$(base64 --wrap=0 -- "$SRC_FN")"
+
+  local DATA_WRAP=0
+  case "$REPL_LANG" in
+    lua )
+      # @2020-08-22: REPL of firmware built from latest dev branch seems to
+      #   have a limit of 255 bytes per input line.
+      DATA_WRAP=248;;
+  esac
+
+  local DATA_B64="$(base64 --wrap=$DATA_WRAP -- "$SRC_FN")"
   [ -n "$DATA_B64" ] || return 3$(
     echo "E: $FUNCNAME: failed to read source file: $SRC_FN" >&2)
 
@@ -41,12 +56,15 @@ function mpfcmd_upload_files__up_one () {
         fh.write(unb64('$DATA_B64'));
         fh.flush();
         fh.close();
-        ";;
+        "
+      ;;
 
     lua )
       MP_CODE="
         local unb64 = encoder.fromBase64;
-        file.putcontents($DEST_PY, unb64('$DATA_B64'));
+        print(file.putcontents($DEST_PY, unb64(
+        ¶  '${DATA_B64//$'\n'/\'¶  ..\'}'¶))
+          or 'Error!');
         "
       ;;
 
@@ -57,11 +75,18 @@ function mpfcmd_upload_files__up_one () {
   MP_CODE="$(<<<"$MP_CODE" tr '\n' '\r' | sed -re 's~(^|\r)\s+~ ~g')"
   MP_CODE="${MP_CODE# }"
   MP_CODE="${MP_CODE% }"
+  MP_CODE="${MP_CODE// ¶/$'\n'}"
+  MP_CODE="${MP_CODE//¶/$'\n'}"
+
+  if [ "$DBGLV" -ge 4 ]; then
+    <<<"$MP_CODE" sed -re 's~^~‹~;s~$~›~' | nl -ba
+    return 0
+  fi
+
   mpf_verify_tty_usage idle || return $?
   echo "D: upload $SRC_FN -> $DEST_ABS"
-  <<<';' mpf_communicate raw duplex || return $?
-  sleep 0.5s
-  <<<"$MP_CODE" mpf_communicate raw duplex || return $?
+  <<<"$MP_CODE" mpf_ersatz_slowcat \
+    | mpf_communicate "$REPL_MODE" duplex || return $?
   DEST_FN=
 }
 

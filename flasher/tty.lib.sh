@@ -71,6 +71,18 @@ function mpf_communicate () {
 }
 
 
+function mpf_ersatz_slowcat () {
+  local DELAY="${1:-0.2s}"
+  local LN=
+  while IFS= read -r LN; do
+    echo "$LN"
+    sleep "$DELAY" || return $?
+    # last action should be a sleep, so we have
+    # a chance to see a reply in duplex mode.
+  done
+}
+
+
 
 
 

@@ -20,11 +20,7 @@ function mpfcmd_upload_firmware () {
     echo "E: can't flash that much slower: there are just" \
       "${#FLASH_MODES_PRIO[@]} known speeds" >&2)
 
-  mpf_verify_tty_usage idle || return $?
-  SECONDS=0
   local FLASH_OPTS=(
-    --port "${CFG[tty]}"
-    --baud "${CFG[baudrate]}"
     write_flash
     --flash_mode="$FLASH_MODE"
     --flash_size=detect
@@ -32,19 +28,17 @@ function mpfcmd_upload_firmware () {
     "${MPF_OFFSET_BYTES:-0}"
     "$SRC_IMG"
     )
-  "${CFG[esptool_cmd]}" "${FLASH_OPTS[@]}"
+  mpf_esptool "${FLASH_OPTS[@]}"
   local FLASH_RV=$?
-  echo "D: Flashing took about $SECONDS sec, rv=$FLASH_RV" >&2
 
-  if [ "$FLASH_RV" == 0 ]; then
-    sed -re '/\S/!d;s~^( ?) *~H: \1~' <<<"
-      If the firmware doesn't work, try
-        * (if serial port) checking your baud rate settings on both sides.
-        * manually rebooting your dev board.
-        * erasing the entire flash before uploading a new firmware.
-        * a slower flash mode. (currently, FLASH_SLOWER=$FLASH_SLOWER )
-      "
-  fi
+  [ "$FLASH_RV" == 0 ] || sed -re '/\S/!d;s~^( ?) *~H: \1~' <<<"
+    If the firmware doesn't work, try
+      * (if serial port) checking your baud rate settings on both sides.
+      * manually rebooting your dev board.
+      * erasing the entire flash before uploading a new firmware.
+      * a slower flash mode. (currently, FLASH_SLOWER=$FLASH_SLOWER )
+    "
+
   return "$FLASH_RV"
 }
 

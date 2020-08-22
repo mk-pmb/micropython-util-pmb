@@ -1,5 +1,5 @@
 { "name": "micropython-util-pmb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tools for helping me set up my NodeMCUs with MicroPython.",
   "keywords": [
     "micropython"
