@@ -42,7 +42,7 @@ function mpfcmd_upload_firmware () {
         * (if serial port) checking your baud rate settings on both sides.
         * manually rebooting your dev board.
         * erasing the entire flash before uploading a new firmware.
-        * a slower flash mode. (currently, FLASH_SLOWER=$FLASH_SLOWER
+        * a slower flash mode. (currently, FLASH_SLOWER=$FLASH_SLOWER )
       "
   fi
   return "$FLASH_RV"
