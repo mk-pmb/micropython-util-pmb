@@ -65,7 +65,7 @@ function mpfcmd_upload_files__up_one () {
         local unb64 = encoder.fromBase64;
         print(assert(file.putcontents($DEST_PY, unb64(
         ¶  '${DATA_B64//$'\n'/\'¶  ..\'}'¶  ))
-          and ('file bytes: %s free + %s used
+          and ('\027[7mfile bytes:\027[0m %s free + %s used
           = %s total'):format(file.fsinfo())));
         "
       ;;
