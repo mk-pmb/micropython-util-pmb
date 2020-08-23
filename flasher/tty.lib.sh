@@ -72,7 +72,7 @@ function mpf_communicate () {
 
 
 function mpf_ersatz_slowcat () {
-  local DELAY="${1:-0.2s}"
+  local DELAY="${1:-0.1s}"
   local LN=
   while IFS= read -r LN; do
     echo "$LN"

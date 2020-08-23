@@ -28,6 +28,7 @@ function mpfcmd_upload_files () {
 function mpfcmd_upload_files__up_one () {
   local SRC_FN="$1"
   local DEST_ABS="${DEST_DIR}${DEST_FN:-$SRC_FN}"
+  echo -n "D: upload: $SRC_FN -> $DEST_ABS: prepare… "
 
   local DATA_WRAP=0
   case "$REPL_LANG" in
@@ -62,9 +63,10 @@ function mpfcmd_upload_files__up_one () {
     lua )
       MP_CODE="
         local unb64 = encoder.fromBase64;
-        print(file.putcontents($DEST_PY, unb64(
-        ¶  '${DATA_B64//$'\n'/\'¶  ..\'}'¶))
-          or 'Error!');
+        print(assert(file.putcontents($DEST_PY, unb64(
+        ¶  '${DATA_B64//$'\n'/\'¶  ..\'}'¶  ))
+          and ('file bytes: %s free + %s used
+          = %s total'):format(file.fsinfo())));
         "
       ;;
 
@@ -84,7 +86,7 @@ function mpfcmd_upload_files__up_one () {
   fi
 
   mpf_verify_tty_usage idle || return $?
-  echo "D: upload $SRC_FN -> $DEST_ABS"
+  echo 'send!'
   <<<"$MP_CODE" mpf_ersatz_slowcat \
     | mpf_communicate "$REPL_MODE" duplex || return $?
   DEST_FN=
